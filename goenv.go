@@ -15,8 +15,19 @@ import (
 	"github.com/hashicorp/hcl/v2/hcldec"
 	"github.com/hashicorp/packer-plugin-sdk/packer"
 	"github.com/hashicorp/packer-plugin-sdk/plugin"
+	"github.com/hashicorp/packer-plugin-sdk/version"
+
 	packerConfig "github.com/hashicorp/packer-plugin-sdk/template/config"
 )
+
+const (
+	ver     = "0.0.8"
+	release = "dev"
+)
+
+func init() {
+	version.InitializePluginVersion(ver, release)
+}
 
 func main() {
 	set := plugin.NewSet()
