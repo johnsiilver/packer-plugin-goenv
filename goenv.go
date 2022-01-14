@@ -21,16 +21,19 @@ import (
 )
 
 const (
-	ver     = "0.0.8"
+	ver     = "0.0.9"
 	release = "dev"
 )
 
+var pv *version.PluginVersion
+
 func init() {
-	version.InitializePluginVersion(ver, release)
+	pv = version.InitializePluginVersion(ver, release)
 }
 
 func main() {
 	set := plugin.NewSet()
+	set.SetVersion(pv)
 
 	set.RegisterProvisioner("goenv", &Provisioner{})
 	err := set.Run()
