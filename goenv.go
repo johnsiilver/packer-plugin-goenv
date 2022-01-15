@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	ver     = "0.0.13"
+	ver     = "0.0.14"
 	release = "dev"
 )
 
