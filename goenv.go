@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	ver     = "0.0.10"
+	ver     = "0.0.11"
 	release = "dev"
 )
 
@@ -69,18 +69,22 @@ func (p *Provisioner) Prepare(raws ...interface{}) error {
 func (p *Provisioner) Provision(ctx context.Context, u packer.Ui, c packer.Communicator, m map[string]interface{}) error {
 	u.Message("Begin Go environment install")
 	if err := p.fetch(ctx, u, c); err != nil {
+		u.Message(fmt.Sprintf("Error: %s", err))
 		log.Println(err)
 		return err
 	}
 	if err := p.push(ctx, u, c); err != nil {
+		u.Message(fmt.Sprintf("Error: %s", err))
 		log.Println(err)
 		return err
 	}
 	if err := p.unpack(ctx, u, c); err != nil {
+		u.Message(fmt.Sprintf("Error: %s", err))
 		log.Println(err)
 		return err
 	}
 	if err := p.test(ctx, u, c); err != nil {
+		u.Message(fmt.Sprintf("Error: %s", err))
 		log.Println(err)
 		return err
 	}
