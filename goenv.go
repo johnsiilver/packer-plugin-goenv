@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -22,7 +21,7 @@ import (
 )
 
 const (
-	ver     = "0.0.12"
+	ver     = "0.0.13"
 	release = "dev"
 )
 
@@ -69,23 +68,19 @@ func (p *Provisioner) Prepare(raws ...interface{}) error {
 func (p *Provisioner) Provision(ctx context.Context, u packer.Ui, c packer.Communicator, m map[string]interface{}) error {
 	u.Message("Begin Go environment install")
 	if err := p.fetch(ctx, u, c); err != nil {
-		u.Message(fmt.Sprintf("Error: %s", err))
-		log.Println(err)
+		u.Error(fmt.Sprintf("Error: %s", err))
 		return err
 	}
 	if err := p.push(ctx, u, c); err != nil {
-		u.Message(fmt.Sprintf("Error: %s", err))
-		log.Println(err)
+		u.Error(fmt.Sprintf("Error: %s", err))
 		return err
 	}
 	if err := p.unpack(ctx, u, c); err != nil {
-		u.Message(fmt.Sprintf("Error: %s", err))
-		log.Println(err)
+		u.Error(fmt.Sprintf("Error: %s", err))
 		return err
 	}
 	if err := p.test(ctx, u, c); err != nil {
-		u.Message(fmt.Sprintf("Error: %s", err))
-		log.Println(err)
+		u.Error(fmt.Sprintf("Error: %s", err))
 		return err
 	}
 	u.Message("Go environment install finished")
@@ -102,13 +97,13 @@ func (p *Provisioner) fetch(ctx context.Context, u packer.Ui, c packer.Communica
 	if p.conf.Version == "latest" {
 		resp, err := http.Get("https://golang.org/VERSION?m=text")
 		if err != nil {
-			u.Message("http get problem: " + err.Error())
-			return fmt.Errorf("problem asking Google for latest Go version: %w", err)
+			u.Error("http get problem: " + err.Error())
+			return fmt.Errorf("problem asking Google for latest Go version: %s", err)
 		}
 		ver, err := io.ReadAll(resp.Body)
 		if err != nil {
-			u.Message("io read problem: " + err.Error())
-			return fmt.Errorf("problem reading latest Go version: %w", err)
+			u.Error("io read problem: " + err.Error())
+			return fmt.Errorf("problem reading latest Go version: %s", err)
 		}
 
 		p.conf.Version = strings.TrimPrefix(string(ver), "go")
@@ -120,13 +115,13 @@ func (p *Provisioner) fetch(ctx context.Context, u packer.Ui, c packer.Communica
 	u.Message("Downloading Go version: " + url)
 	resp, err := http.Get(url)
 	if err != nil {
-		return fmt.Errorf("problem reaching golang.org for version(%s): %w)", p.conf.Version, err)
+		return fmt.Errorf("problem reaching golang.org for version(%s): %s)", p.conf.Version, err)
 	}
 	defer resp.Body.Close()
 
 	p.content, err = io.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("problem downloading file: %w", err)
+		return fmt.Errorf("problem downloading file: %s", err)
 	}
 	p.fileName = fmt.Sprintf(name, p.conf.Version)
 	u.Message("Downloading complete")
