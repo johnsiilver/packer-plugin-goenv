@@ -62,6 +62,7 @@ func (p *Provisioner) Prepare(raws ...interface{}) error {
 		return err
 	}
 	c.Defaults()
+	p.conf = &c
 	return nil
 }
 
@@ -93,8 +94,8 @@ func (p *Provisioner) fetch(ctx context.Context, u packer.Ui, c packer.Communica
 		name  = `go%s.linux-amd64.tar.gz`
 	)
 
-	u.Message("Determining latest Go version")
 	if p.conf.Version == "latest" {
+		u.Message("Determining latest Go version")
 		resp, err := http.Get("https://golang.org/VERSION?m=text")
 		if err != nil {
 			u.Error("http get problem: " + err.Error())
@@ -108,6 +109,8 @@ func (p *Provisioner) fetch(ctx context.Context, u packer.Ui, c packer.Communica
 
 		p.conf.Version = strings.TrimPrefix(string(ver), "go")
 		u.Message("Latest Go version: " + p.conf.Version)
+	} else {
+		u.Message("Go version to use is: " + p.conf.Version)
 	}
 
 	url := fmt.Sprintf(goURL, p.conf.Version)
