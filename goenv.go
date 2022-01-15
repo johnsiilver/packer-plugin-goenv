@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"runtime"
 	"strings"
 
 	"github.com/johnsiilver/packer-plugin-goenv/internal/config"
@@ -21,7 +22,7 @@ import (
 )
 
 const (
-	ver     = "0.0.14"
+	ver     = "0.0.15"
 	release = "dev"
 )
 
@@ -90,9 +91,11 @@ func (p *Provisioner) Provision(ctx context.Context, u packer.Ui, c packer.Commu
 
 func (p *Provisioner) fetch(ctx context.Context, u packer.Ui, c packer.Communicator) error {
 	const (
-		goURL = `https://golang.org/dl/go%s.linux-amd64.tar.gz`
-		name  = `go%s.linux-amd64.tar.gz`
+		goURL = `https://golang.org/dl/go%s.linux-%s.tar.gz`
+		name  = `go%s.linux-%s.tar.gz`
 	)
+
+	platform := runtime.GOARCH
 
 	if p.conf.Version == "latest" {
 		u.Message("Determining latest Go version")
@@ -113,7 +116,7 @@ func (p *Provisioner) fetch(ctx context.Context, u packer.Ui, c packer.Communica
 		u.Message("Go version to use is: " + p.conf.Version)
 	}
 
-	url := fmt.Sprintf(goURL, p.conf.Version)
+	url := fmt.Sprintf(goURL, p.conf.Version, platform)
 
 	u.Message("Downloading Go version: " + url)
 	resp, err := http.Get(url)
@@ -126,7 +129,7 @@ func (p *Provisioner) fetch(ctx context.Context, u packer.Ui, c packer.Communica
 	if err != nil {
 		return fmt.Errorf("problem downloading file: %s", err)
 	}
-	p.fileName = fmt.Sprintf(name, p.conf.Version)
+	p.fileName = fmt.Sprintf(name, p.conf.Version, platform)
 	u.Message("Downloading complete")
 
 	return nil
