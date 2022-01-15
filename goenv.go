@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -66,17 +67,21 @@ func (p *Provisioner) Prepare(raws ...interface{}) error {
 }
 
 func (p *Provisioner) Provision(ctx context.Context, u packer.Ui, c packer.Communicator, m map[string]interface{}) error {
-	u.Message("Being Go environment install")
+	u.Message("Begin Go environment install")
 	if err := p.fetch(ctx, u, c); err != nil {
+		log.Println(err)
 		return err
 	}
 	if err := p.push(ctx, u, c); err != nil {
+		log.Println(err)
 		return err
 	}
 	if err := p.unpack(ctx, u, c); err != nil {
+		log.Println(err)
 		return err
 	}
 	if err := p.test(ctx, u, c); err != nil {
+		log.Println(err)
 		return err
 	}
 	u.Message("Go environment install finished")
