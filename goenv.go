@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	ver     = "0.0.11"
+	ver     = "0.0.12"
 	release = "dev"
 )
 
@@ -99,13 +99,15 @@ func (p *Provisioner) fetch(ctx context.Context, u packer.Ui, c packer.Communica
 	)
 
 	u.Message("Determining latest Go version")
-	if p.conf.Version != "latest" {
+	if p.conf.Version == "latest" {
 		resp, err := http.Get("https://golang.org/VERSION?m=text")
 		if err != nil {
+			u.Message("http get problem: " + err.Error())
 			return fmt.Errorf("problem asking Google for latest Go version: %w", err)
 		}
 		ver, err := io.ReadAll(resp.Body)
 		if err != nil {
+			u.Message("io read problem: " + err.Error())
 			return fmt.Errorf("problem reading latest Go version: %w", err)
 		}
 
