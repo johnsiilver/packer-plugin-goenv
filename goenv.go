@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	ver     = "0.0.9"
+	ver     = "0.0.10"
 	release = "dev"
 )
 
