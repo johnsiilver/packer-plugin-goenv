@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	ver     = "0.0.15"
+	ver     = "0.0.16"
 	release = "dev"
 )
 
@@ -36,7 +36,7 @@ func main() {
 	set := plugin.NewSet()
 	set.SetVersion(pv)
 
-	set.RegisterProvisioner("goenv", &Provisioner{})
+	set.RegisterProvisioner(plugin.DEFAULT_NAME, &Provisioner{})
 	err := set.Run()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
